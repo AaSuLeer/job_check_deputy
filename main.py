@@ -1,6 +1,22 @@
 import os
+import sys
+import subprocess
 import pandas as pd
-import openpyxl
+
+try:
+    import openpyxl
+except ImportError:
+    try:
+        subprocess.check_call(
+            [sys.executable, "-m", "pip", "install", "openpyxl"]
+        )
+        import openpyxl
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError("Failed to install openpyxl") from e
+
+
+SOURCE_LIST = input("enter your list's address here:")#此处输入表格的地址
+TARGET_JOBFLODER = input("enter your job floder's address here:") #此处输入作业文件夹的地址
 
 def load_roster(file_path):
     if file_path.endswith(".csv"):
@@ -36,9 +52,7 @@ def find_missing_students(names, files):
 
 
 def save_to_excel(submitted, missing, output_file):
-    """
-    覆写写入Excel（等价于 w 模式）
-    """
+    
     df_sub = pd.DataFrame({"已提交": list(submitted)})
     df_miss = pd.DataFrame({"未提交": list(missing)})
 
@@ -49,8 +63,8 @@ def save_to_excel(submitted, missing, output_file):
 
 
 def main():
-    roster_file = "0923201班班级成员表.csv"
-    target_folder = "C:/Users/blacksheep/Desktop/0923201班级亚信安全企业考察报告"
+    roster_file = "SOURCE_LIST"
+    target_folder = "TARGET_JOBFLODER"
     output_file = "result.xlsx"
 
     names = load_roster(roster_file)
